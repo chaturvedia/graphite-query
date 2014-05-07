@@ -14,7 +14,7 @@ for subdir in ('whisper', 'ceres', 'rrd', 'log', 'log/webapp'):
 
 setup(
     name='graphite-query',
-    version='0.10.2',
+    version='0.10.3',
     url='https://github.com/edin1/graphite-query',
     author="edin1, based on Chris Davis's graphite-web"\
         "and Bruno Renié's graphite-api",
