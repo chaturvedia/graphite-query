@@ -1,18 +1,6 @@
 import os
-import time
-import logging
 
-import whisper
-
-from graphite import query
-from . import TestCase
-
-# Silence logging during tests
-LOGGER = logging.getLogger()
-
-# logging.NullHandler is a python 2.7ism
-if hasattr(logging, "NullHandler"):
-    LOGGER.addHandler(logging.NullHandler())
+from __setup import TestCase
 
 
 class QueryTest(TestCase):
@@ -20,7 +8,13 @@ class QueryTest(TestCase):
 
     def setUp(self):
         super(QueryTest, self).setUp()
+        import time
+        import whisper
         from graphite import settings
+        if not os.path.exists(settings.WHISPER_DIR):
+            os.makedirs(settings.WHISPER_DIR)
+        if not settings.STANDARD_DIRS:
+            raise Exception("settings.STANDARD_DIRS shouldn't be empty")
         self.db = os.path.join(settings.WHISPER_DIR, 'test.wsp')
         whisper.create(self.db, [(1, 60)])
 
@@ -31,6 +25,7 @@ class QueryTest(TestCase):
 
 
     def test_query(self):
+        from graphite import query
         data = query.query({'target': 'test'})
         end = data[0]#[-4:]
         match = False
