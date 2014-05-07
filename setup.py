@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-import os
-
-
 from setuptools import setup, find_packages
 
 storage_dirs = []
 
 for subdir in ('whisper', 'ceres', 'rrd', 'log', 'log/webapp'):
     storage_dirs.append( ('storage/%s' % subdir, []) )
-
-
 
 setup(
     name='graphite-query',
