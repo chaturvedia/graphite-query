@@ -11,6 +11,7 @@ class QueryTest(TestCase):
         import time
         import whisper
         from graphite import settings
+        settings.CREATE_DIRECTORIES = False
         if not os.path.exists(settings.WHISPER_DIR):
             os.makedirs(settings.WHISPER_DIR)
         if not settings.STANDARD_DIRS:

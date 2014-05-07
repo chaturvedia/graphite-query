@@ -12,21 +12,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 # settings for graphite project.
-# DO NOT MODIFY THIS FILE DIRECTLY - use local_settings.py instead
+# DO NOT MODIFY THIS FILE DIRECTLY
 import os
 from os.path import abspath, dirname, join
 import logging
 from graphite.logger import NullHandler
 log = logging.getLogger(__name__)
 log.addHandler(NullHandler())
-_SEPARATOR = "-------------"
 
-def _check_dir_exists(valuename, dirname):
-    if not os.path.exists(dirname):
+CREATE_DIRECTORIES = False
+
+# Should be used only inside this module
+def _check_dir_exists(valuename, _dirname):
+    if not os.path.exists(_dirname):
         message = "Directory '%s' (%s) doesn't exist."%(\
-            dirname, valuename)
+            _dirname, valuename)
         # Perhaps the message should be written to sys.stderr also
         log.warning(message)
+
+        if CREATE_DIRECTORIES:
+            log.warning("Creating directory %s (%s)"%(_dirname, valuename))
+            os.makedirs(_dirname)
         return False
     return True
 
@@ -35,11 +41,11 @@ def _check_dir_exists(valuename, dirname):
 # that contains the "graphite" directory. Should not be modified
 GRAPHITE_ROOT = dirname(dirname( abspath(__file__) ))
 # Initialize additional path variables
-STORAGE_DIR = ''
-INDEX_FILE = ''
-CERES_DIR = ''
-WHISPER_DIR = ''
-STANDARD_DIRS = []
+#STORAGE_DIR = None
+INDEX_FILE = None
+CERES_DIR = None
+WHISPER_DIR = None
+STANDARD_DIRS = None
 
 # Cluster settings
 CLUSTER_SERVERS = []
@@ -72,7 +78,7 @@ FLUSHRRDCACHED = ''
 
 # Path configuration
 
-def setup_storage_variables(storage_dir):
+def setup_storage_variables(storage_dir, create_directories=False):
     """ This function can be called from user's code to setup
         the various storage variables automatically """
     global STORAGE_DIR
@@ -81,7 +87,13 @@ def setup_storage_variables(storage_dir):
     global WHISPER_DIR
     global STANDARD_DIRS
 
+    if create_directories:
+        global CREATE_DIRECTORIES
+        CREATE_DIRECTORIES_old = CREATE_DIRECTORIES
+        CREATE_DIRECTORIES = create_directories
+
     STORAGE_DIR = storage_dir
+    _check_dir_exists("STORAGE_DIR", STORAGE_DIR)
     STANDARD_DIRS = []
 
     if os.path.commonprefix([STORAGE_DIR, GRAPHITE_ROOT]) == GRAPHITE_ROOT:
@@ -91,25 +103,31 @@ def setup_storage_variables(storage_dir):
         log.warn("You'll probably want to set them relative to "\
                              "/opt/graphite")
     INDEX_FILE = join(STORAGE_DIR, 'index')
-    # The code for ceres should become similar
-    # to the code for whisper
-    CERES_DIR = join(STORAGE_DIR, 'ceres')
-    _check_dir_exists("CERES_DIR", CERES_DIR)
     try:
         import whisper
+        WHISPER_DIR = join(STORAGE_DIR, 'whisper')
+        _check_dir_exists("WHISPER_DIR", WHISPER_DIR)
+        STANDARD_DIRS.append(WHISPER_DIR)
     except ImportError:
         # In the future, when/if there are more databases to chose from
         # warn should be changed to info
         #log.warn("whisper module could not be loaded, whisper support disabled")
         raise ImportError("The graphite-whisper module is required, please install it.")
-    WHISPER_DIR = join(STORAGE_DIR, 'whisper')
-    _check_dir_exists("WHISPER_DIR", WHISPER_DIR)
 
-    STANDARD_DIRS.append(WHISPER_DIR)
+    # The code for ceres should become similar
+    # to the code for whisper
+    try:
+        import ceres
+        CERES_DIR = join(STORAGE_DIR, 'ceres')
+        _check_dir_exists("CERES_DIR", CERES_DIR)
+        STANDARD_DIRS.append(CERES_DIR)
+    except ImportError:
+        pass
 
-if not STORAGE_DIR:
-    STORAGE_DIR = os.environ.get('GRAPHITE_STORAGE_DIR', join(GRAPHITE_ROOT, 'storage'))
-_check_dir_exists("STORAGE_DIR", STORAGE_DIR)
+    # Returning back its previous value
+    if create_directories:
+        CREATE_DIRECTORIES = CREATE_DIRECTORIES_old
 
 # Setup some default values
+STORAGE_DIR = os.environ.get('GRAPHITE_STORAGE_DIR', join(GRAPHITE_ROOT, 'storage'))
 setup_storage_variables(STORAGE_DIR)
