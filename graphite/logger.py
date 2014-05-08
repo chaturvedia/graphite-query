@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 
-import os, sys, logging
+import logging
 try:
     from logging import NullHandler
 except ImportError as ie:  # py2.6
@@ -32,31 +32,21 @@ logging.addLevelName(logging.CACHE,"CACHE")
 # TO-DO: removed unused code
 class GraphiteLogger:
     def __init__(self):
-        self.infoLogger = self._config_logger('info.log',
-                                              'info',
-                                              level = logging.INFO,
+        self.infoLogger = self._config_logger('INFO',
+                                              level=logging.INFO,
                                               )
-        self.exceptionLogger = self._config_logger('exception.log',
-                                                   'EXCEPTION',
+        self.exceptionLogger = self._config_logger('EXCEPTION',
                                                    )
-        self.cacheLogger = self._config_logger('cache.log',
-                                               'CACHE',
+        self.cacheLogger = self._config_logger('CACHE',
                                                )
 
     @staticmethod
-    def _config_logger(log_file_name, name, level=None):
+    def _config_logger(name, level=None):
         logger = logging.getLogger(name)
         if level is not None:
             logger.setLevel(level)
         logger.addHandler(NullHandler())
         return logger
-
-    def add_handler(self, HandlerClass):
-        """ Adds the same handler (instance of the parameter HandlerClass)
-            to all loggers """
-        self.infoLogger.addHandler(HandlerClass())
-        self.exceptionLogger.addHandler(HandlerClass())
-        self.cacheLogger.addHandler(HandlerClass())
 
     def info(self,msg,*args,**kwargs):
         return self.infoLogger.info(msg,*args,**kwargs)
