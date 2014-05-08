@@ -51,6 +51,13 @@ class GraphiteLogger:
         logger.addHandler(NullHandler())
         return logger
 
+    def add_handler(self, HandlerClass):
+        """ Adds the same handler (instance of the parameter HandlerClass)
+            to all loggers """
+        self.infoLogger.addHandler(HandlerClass())
+        self.exceptionLogger.addHandler(HandlerClass())
+        self.cacheLogger.addHandler(HandlerClass())
+
     def info(self,msg,*args,**kwargs):
         return self.infoLogger.info(msg,*args,**kwargs)
 
