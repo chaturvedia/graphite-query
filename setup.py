@@ -16,7 +16,7 @@ setup(
     license='Apache Software License 2.0',
     description="Utilities for querying graphite's database",
     install_requires=open("install_requires.txt").read().split(),
-    packages=find_packages(),#exclude=['tests']),
+    packages=find_packages(exclude=['tests']),
     data_files= storage_dirs,
     test_suite="tests",
     tests_require=open("tests_require.txt").read().split(),
