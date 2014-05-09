@@ -12,3 +12,6 @@ docs/_build
 .idea/*
 .coverage
 htmlcov/*
+graphite-query-env/*
+venv/*
+*.bak
