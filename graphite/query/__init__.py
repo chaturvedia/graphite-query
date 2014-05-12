@@ -20,6 +20,9 @@ def query(params):
         target: see http://graphite.readthedocs.org/en/latest/render_api.html#target
     """
 
+    if not isinstance(params, dict):
+        raise TypeError("The supplied parameter has to be a dictionary")
+
     data = []
 
     try:

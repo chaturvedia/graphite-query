@@ -40,3 +40,7 @@ class QueryTest(TestCase):
                 match = True
                 break
         self.assertTrue(match)
+
+    def test_params_type(self):
+        from graphite import query
+        self.assertRaises(TypeError, query.query, "target:localhost")
