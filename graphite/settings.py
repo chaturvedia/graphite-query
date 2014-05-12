@@ -129,5 +129,5 @@ def setup_storage_variables(storage_dir, create_directories=False):
         CREATE_DIRECTORIES = CREATE_DIRECTORIES_old
 
 # Setup some default values
-STORAGE_DIR = os.environ.get('GRAPHITE_STORAGE_DIR', join(GRAPHITE_ROOT, 'storage'))
+STORAGE_DIR = os.environ.get('GRAPHITE_STORAGE_DIR', '/opt/graphite/storage')
 setup_storage_variables(STORAGE_DIR)
