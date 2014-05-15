@@ -21,7 +21,6 @@ class StandardFinder:
         return self._directories or settings.STANDARD_DIRS
 
     def find_nodes(self, query):
-        print self.directories
         clean_pattern = query.pattern.replace('\\', '')
         pattern_parts = clean_pattern.split('.')
 
