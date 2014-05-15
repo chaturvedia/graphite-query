@@ -45,6 +45,12 @@ class QueryTest(TestCase):
 
     def test_params_type(self):
         self.assertRaises(TypeError, query.query, "target:localhost")
+
+    def test_all_None(self):
+        whisper.create(os.path.join(settings.WHISPER_DIR, 'test_all_None.wsp'), [(1, 60)])
+        data = query.query({'target': 'test_all_None'})
+        self.assertNotEqual(data, [])
+
     def test_change_STANDARD_DIRS(self):
         " A test against a bug that was found in StandardFinder.directories "
         # This sets up whatever was the default storage directory layout
