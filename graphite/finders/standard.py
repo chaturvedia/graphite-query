@@ -14,10 +14,14 @@ class StandardFinder:
     DATASOURCE_DELIMETER = '::RRD_DATASOURCE::'
 
     def __init__(self, directories=None):
-        directories = directories or settings.STANDARD_DIRS
-        self.directories = directories
+        self._directories = directories
+
+    @property
+    def directories(self):
+        return self._directories or settings.STANDARD_DIRS
 
     def find_nodes(self, query):
+        print self.directories
         clean_pattern = query.pattern.replace('\\', '')
         pattern_parts = clean_pattern.split('.')
 
