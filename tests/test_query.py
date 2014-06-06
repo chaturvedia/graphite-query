@@ -7,6 +7,7 @@ import time
 import whisper
 from graphite import settings
 from graphite import query
+from pprint import pprint
 
 class QueryTest(TestCase):
     _test_data = [0.5, 0.4, 0.6]
@@ -28,8 +29,8 @@ class QueryTest(TestCase):
             whisper.update(self.db, value, ts - i)
         self.ts = ts
 
-    def test_query(self):
-        data = query.query({'target': 'test'})
+    def test_generate_and_query_data(self):
+        data = query.query(**{'target': 'test'})
         end = data[0]#[-4:]
         match = False
         # We iterate through all values and check
@@ -44,17 +45,16 @@ class QueryTest(TestCase):
         self.assertTrue(match)
 
     def test_params_type(self):
-        self.assertRaises(TypeError, query.query, "target:localhost")
+        self.assertRaises(TypeError, query.query, {"localhost.service"})
 
     def test_all_None(self):
         whisper.create(os.path.join(settings.WHISPER_DIR, 'test_all_None.wsp'), [(1, 60)])
-        data = query.query({'target': 'test_all_None'})
+        data = query.query(**{'target': 'test_all_None'})
         self.assertNotEqual(data, [])
 
     def test_change_STANDARD_DIRS(self):
         " A test against a bug that was found in StandardFinder.directories "
         # This sets up whatever was the default storage directory layout
-        from graphite import settings
         # We remove the default storage dir
         shutil.rmtree(settings.STORAGE_DIR, ignore_errors=True)
         # Now change the storage directory
@@ -63,5 +63,11 @@ class QueryTest(TestCase):
         shutil.rmtree(STORAGE_DIR_new, ignore_errors=True)
         settings.setup_storage_variables(STORAGE_DIR_new, create_directories=True)
         self.populate_data()
-        data = query.query({'target': 'test'})
+        data = query.query(**{'target': 'test'})
         self.assertTrue(data[0])
+
+    def test_positional_arguments(self):
+        Q = query.query
+        self.assertTrue(Q('test'))
+        self.assertIn(len(list(Q('test')[0])), (59, 60, 61))
+        #self.assertEqual(len(list(Q('test', '-3min')[0])), 120)

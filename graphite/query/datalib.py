@@ -90,7 +90,6 @@ class TimeSeries(list):
 
 # Data retrieval API
 def fetchData(requestContext, pathExpr):
-
   seriesList = []
   startTime = int( time.mktime( requestContext['startTime'].timetuple() ) )
   endTime   = int( time.mktime( requestContext['endTime'].timetuple() ) )
