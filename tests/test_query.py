@@ -69,5 +69,18 @@ class QueryTest(TestCase):
     def test_positional_arguments(self):
         Q = query.query
         self.assertTrue(Q('test'))
+        # Because of the passing of time (not sure though)
+        # we check three values, as graphite may not return 60 as hoped
         self.assertIn(len(list(Q('test')[0])), (59, 60, 61))
         #self.assertEqual(len(list(Q('test', '-3min')[0])), 120)
+
+    def test_old_whisper_data(self):
+        wsp_file = os.path.join(settings.WHISPER_DIR, 'test.wsp')
+        current_time = os.stat(wsp_file).st_mtime
+
+        # Now, modify the modification time to be one day old
+        old_time = current_time - 60*60*24
+        os.utime(wsp_file, (old_time, old_time))
+        data = query.query(**{'target': 'test'})
+        self.assertNotEqual(data, [])
+
