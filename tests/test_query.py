@@ -82,5 +82,6 @@ class QueryTest(TestCase):
         old_time = current_time - 60*60*24
         os.utime(wsp_file, (old_time, old_time))
         data = query.query(**{'target': 'test'})
+        # This test fails on purpose, as it's unsure whether it's a bug or
+        # a feature
         self.assertNotEqual(data, [])
-
