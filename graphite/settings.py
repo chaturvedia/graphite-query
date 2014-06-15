@@ -75,6 +75,8 @@ STORAGE_FINDERS = (
 # If using rrdcached, set to the address or socket of the daemon
 FLUSHRRDCACHED = ''
 
+#TIME_ZONE = 'America/Los_Angeles'
+
 
 # Path configuration
 
