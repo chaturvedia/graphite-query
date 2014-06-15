@@ -1,9 +1,9 @@
 Overview
 ========
 
-` ``graphite-query`` <https://github.com/edin1/graphite-query>`_ is a
+`graphite-query <https://github.com/edin1/graphite-query>`_ is a
 library created from
-` ``graphite-web`` <https://github.com/graphite-project/graphite-web>`_
+`graphite-web <https://github.com/graphite-project/graphite-web>`_
 in order to make some of its functionality framework neutral, i.e. to
 require as little dependencies as possible.
 
@@ -34,8 +34,8 @@ subpackage).
 ---------
 
 ``query`` takes both positional and keyword arguments, which in turn are
-taken from [graphite-web's render API]
-(http://graphite.readthedocs.org/en/latest/render\_api.html) except for
+taken from `graphite-web's render API
+<http://graphite.readthedocs.org/en/latest/render\_api.html>`_ except for
 the graph/format arguments, which are, of course, inapplicable to
 graphite-query.
 
