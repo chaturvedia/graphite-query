@@ -9,16 +9,24 @@ import tzlocal
 def query(*args, **kwargs):
     """ Returns a list of graphite.query.datalib.TimeSeries instances
 
-        kwargs is a dictionary whose both keys and values are strings,
-        except target, which is a list of strings.
+        `query` takes both positional and keyword arguments, which in turn are taken
+        from [graphite-web's render API]
+        (http://graphite.readthedocs.org/en/latest/render_api.html)
+        except for the graph/format arguments, which are, of course,
+        inapplicable to graphite-query.
 
-        The params are taken from:
-        http://graphite.readthedocs.org/en/latest/render_api.html
-        except for the graph/format parameters
+        In short, its parameters (in positional order) are:
 
-        tz: see http://graphite.readthedocs.org/en/latest/render_api.html#tz
-        until/from: see http://graphite.readthedocs.org/en/latest/render_api.html#from-until
-        target: see http://graphite.readthedocs.org/en/latest/render_api.html#target
+        * `target`: required, a `graphite-web` compatible path (i.e. string), or a `list` of
+         paths, see <http://graphite.readthedocs.org/en/latest/render_api.html#target>
+         for additional documentation.
+        * `from` and `until`: two optional parameters that specify the relative or
+         absolute time period to graph.
+         see <http://graphite.readthedocs.org/en/latest/render_api.html#from-until>
+        * `tz`: optional, time zone to convert all times into.
+         If this parameter is not specified, then `graphite.query.settings.TIME_ZONE`
+         is used (if any).  Finally, system's timezone is used if `TIME_ZONE` is empty.
+         see <http://graphite.readthedocs.org/en/latest/render_api.html#tz>
     """
     params = {}
 
@@ -88,6 +96,10 @@ def query(*args, **kwargs):
     return data
 
 def eval_qs(query_string):
+    """ A helper function that converts a ``graphite-web`` compatible
+        URL query string (compatible with the render controller)
+        and then calls the ``query`` function to get the result.
+    """
     from urlparse import parse_qs
 
     params = parse_qs(query_string)
