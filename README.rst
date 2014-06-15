@@ -35,7 +35,7 @@ subpackage).
 
 ``query`` takes both positional and keyword arguments, which in turn are
 taken from
-`graphite-web's render API <http://graphite.readthedocs.org/en/latest/render\_api.html>`_
+`graphite-web's render API <http://graphite.readthedocs.org/en/latest/render_api.html>`_
 except for
 the graph/format arguments, which are, of course, inapplicable to
 graphite-query.
