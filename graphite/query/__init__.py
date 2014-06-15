@@ -112,7 +112,8 @@ def eval_qs(query_string):
     return query(**params)
 
 def get_all_leaf_nodes():
-    "Return a ``list`` of all leaf nodes that are found in THE ``STORAGE_DIR``"
+    """Return a ``list`` of all leaf nodes/targets that are found in the
+    ``settings.STORAGE_DIR``"""
     from graphite.storage import get_finder, FindQuery
     from graphite.node import LeafNode
 
