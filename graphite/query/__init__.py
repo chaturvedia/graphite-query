@@ -109,7 +109,7 @@ def eval_qs(query_string):
     for key, value in params.items():
         if key != "target":
             params[key] = value[0]
-    return query(params)
+    return query(**params)
 
 def get_all_leaf_nodes():
     "Return a ``list`` of all leaf nodes that are found in THE ``STORAGE_DIR``"

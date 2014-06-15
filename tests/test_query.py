@@ -91,3 +91,7 @@ class QueryTest(TestCase):
         whisper.create(os.path.join(settings.WHISPER_DIR, 'test_all_None.wsp'), [(1, 60)])
         nodes = query.get_all_leaf_nodes()
         self.assertEqual(sorted(nodes), sorted(['test', 'test_all_None']))
+
+    def test_eval_qs(self):
+        self.assertEqual(query.query('test'),
+                         query.eval_qs('"format=raw&target=test"'))
