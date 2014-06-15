@@ -1,5 +1,6 @@
 import os
 import shutil
+import datetime
 
 from __setup import TestCase
 
@@ -72,7 +73,13 @@ class QueryTest(TestCase):
         # Because of the passing of time (not sure though)
         # we check three values, as graphite may not return 60 as hoped
         self.assertIn(len(list(Q('test')[0])), (59, 60, 61))
-        #self.assertEqual(len(list(Q('test', '-3min')[0])), 120)
+        # res = Q('test', '-3min')[0]
+        # pprint([(attr, getattr(res, attr)) for attr in dir(res) if not attr.startswith("_")])
+        # print datetime.datetime.fromtimestamp(res.start)
+        # print datetime.datetime.fromtimestamp(res.end)
+        # print (res.end - res.start), 'seconds'
+        # print res.count()
+        # self.assertEqual(len(list(res)), 60)
 
     def test_old_whisper_data(self):
         wsp_file = os.path.join(settings.WHISPER_DIR, 'test.wsp')
