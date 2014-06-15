@@ -1,9 +1,9 @@
 Overview
 ========
 
-```graphite-query`` <https://github.com/edin1/graphite-query>`__ is a
+` ``graphite-query`` <https://github.com/edin1/graphite-query>`_ is a
 library created from
-```graphite-web`` <https://github.com/graphite-project/graphite-web>`__
+` ``graphite-web`` <https://github.com/graphite-project/graphite-web>`_
 in order to make some of its functionality framework neutral, i.e. to
 require as little dependencies as possible.
 
