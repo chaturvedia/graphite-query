@@ -6,6 +6,17 @@ in order to make
 some of its functionality framework neutral, i.e. to require as little
 dependencies as possible.
 
+# Installation
+
+You can install `graphite-query` by running:
+
+        pip install graphite-query
+
+You can also download/clone the github repository, and, inside the directory
+where you downloaded `graphite-query` run:
+
+        python setup.py install
+
 # Usage
 This package provides the functions `query`, `eval_qs` and `get_all_leaf_nodes`
 (all are part of the `graphite.query` subpackage).
