@@ -85,3 +85,9 @@ class QueryTest(TestCase):
         # This test fails on purpose, as it's unsure whether it's a bug or
         # a feature
         self.assertNotEqual(data, [])
+
+    def test_get_all_leaf_nodes(self):
+        # Create another "node" so there are two nodes
+        whisper.create(os.path.join(settings.WHISPER_DIR, 'test_all_None.wsp'), [(1, 60)])
+        nodes = query.get_all_leaf_nodes()
+        self.assertEqual(sorted(nodes), sorted(['test', 'test_all_None']))
