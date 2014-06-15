@@ -110,3 +110,27 @@ def eval_qs(query_string):
         if key != "target":
             params[key] = value[0]
     return query(params)
+
+def get_all_leaf_nodes():
+    "Return a ``list`` of all leaf nodes that are found in THE ``STORAGE_DIR``"
+    from graphite.storage import get_finder, FindQuery
+    from graphite.node import LeafNode
+
+    finders = [get_finder(finder_path)
+                       for finder_path in settings.STORAGE_FINDERS]
+    # Go iteratively through the patern "*.*.*......."
+    # and, after some time, return all available nodes.
+    # Might be also done just by going through the directory
+    # structure?
+    res = []
+    pattern = "*"
+    found = True
+    while found:
+        found = False
+        for finder in finders:
+            for node in finder.find_nodes(FindQuery(pattern, None, None)):
+                found = True
+                if isinstance(node, LeafNode):
+                    res.append(node.path)
+        pattern += ".*"
+    return res
