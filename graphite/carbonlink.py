@@ -6,7 +6,7 @@ import random
 import sys
 from select import select
 from graphite import settings
-from graphite.query.hashing import ConsistentHashRing
+import graphite.hashing
 from graphite.logger import log
 from graphite.util import load_module, unpickle
 
@@ -34,7 +34,7 @@ class CarbonLinkPool:
         if len(servers) < settings.REPLICATION_FACTOR:
             raise Exception("REPLICATION_FACTOR=%d cannot exceed servers=%d" % (settings.REPLICATION_FACTOR, len(servers)))
 
-        self.hash_ring = ConsistentHashRing(self.hosts)
+        self.hash_ring = graphite.hashing.ConsistentHashRing(self.hosts)
         self.keyfunc = load_keyfunc()
         self.connections = {}
         self.last_failure = {}
