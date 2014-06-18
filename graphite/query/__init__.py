@@ -140,7 +140,8 @@ def get_all_leaf_nodes(finders=None):
 
 def get_structure(prefix=None, finders=None):
     """Return a hierarchical ``dict`` of nodes/targets that are found in the
-    ``settings.STORAGE_DIR``"""
+    ``settings.STORAGE_DIR``
+    """
 
     if finders is None:
         finders = [get_finder(finder_path)
