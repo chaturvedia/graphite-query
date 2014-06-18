@@ -6,9 +6,11 @@ from __setup import TestCase
 
 import time
 import whisper
+from pprint import pprint
+
 from graphite import settings
 from graphite import query
-from pprint import pprint
+from graphite.node import LeafNode
 
 class QueryTest(TestCase):
     _test_data = [0.5, 0.4, 0.6]
@@ -20,9 +22,9 @@ class QueryTest(TestCase):
             os.makedirs(settings.WHISPER_DIR)
         if not settings.STANDARD_DIRS:
             raise Exception("settings.STANDARD_DIRS shouldn't be empty")
-        self.populate_data()
+        self._populate_data()
 
-    def populate_data(self):
+    def _populate_data(self):
         self.db = os.path.join(settings.WHISPER_DIR, 'test.wsp')
         whisper.create(self.db, [(1, 60)])
         ts = int(time.time())
@@ -63,7 +65,7 @@ class QueryTest(TestCase):
         # Remove if exists
         shutil.rmtree(STORAGE_DIR_new, ignore_errors=True)
         settings.setup_storage_variables(STORAGE_DIR_new, create_directories=True)
-        self.populate_data()
+        self._populate_data()
         data = query.query(**{'target': 'test'})
         self.assertTrue(data[0])
 
@@ -93,12 +95,25 @@ class QueryTest(TestCase):
         # a feature
         self.assertNotEqual(data, [])
 
+    def test_eval_qs(self):
+        self.assertEqual(query.query('test'),
+                         query.eval_qs('"format=raw&target=test"'))
+
     def test_get_all_leaf_nodes(self):
         # Create another "node" so there are two nodes
         whisper.create(os.path.join(settings.WHISPER_DIR, 'test_all_None.wsp'), [(1, 60)])
         nodes = query.get_all_leaf_nodes()
         self.assertEqual(sorted(nodes), sorted(['test', 'test_all_None']))
 
-    def test_eval_qs(self):
-        self.assertEqual(query.query('test'),
-                         query.eval_qs('"format=raw&target=test"'))
+    def test_get_structure(self):
+        whisper.create(os.path.join(settings.WHISPER_DIR, 'test2.wsp'), [(1, 60)])
+        # Create a bit of a structure
+        os.makedirs(os.path.join(settings.WHISPER_DIR, "level1", "level2", "level3"))
+        level1 = os.path.join(settings.WHISPER_DIR, "level1")
+        level2 = os.path.join(level1, "level2")
+        whisper.create(os.path.join(level1, 'level1_test.wsp'), [(1, 60)])
+        structure = query.get_structure()
+        self.assertIn("test", structure)
+        self.assertIsInstance(structure["test2"], LeafNode)
+        self.assertNotIn("level2", structure["level1"])
+        #self.assertEqual(structure, sorted(['test', 'test_all_None']))

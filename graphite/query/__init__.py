@@ -1,10 +1,13 @@
 """ This is a modified version of package render from graphite-web """
 import pytz
+import tzlocal
+
 from graphite import settings
 from graphite.settings import setup_storage_variables
 from graphite.query.evaluator import evaluateTarget
 from graphite.query.attime import parseATTime
-import tzlocal
+from graphite.storage import get_finder, FindQuery
+from graphite.node import LeafNode, BranchNode
 
 def query(*args, **kwargs):
     """ Returns a list of graphite.query.datalib.TimeSeries instances
@@ -111,13 +114,12 @@ def eval_qs(query_string):
             params[key] = value[0]
     return query(**params)
 
-def get_all_leaf_nodes():
+def get_all_leaf_nodes(finders=None):
     """Return a ``list`` of all leaf nodes/targets that are found in the
     ``settings.STORAGE_DIR``"""
-    from graphite.storage import get_finder, FindQuery
-    from graphite.node import LeafNode
 
-    finders = [get_finder(finder_path)
+    if finders is None:
+        finders = [get_finder(finder_path)
                        for finder_path in settings.STORAGE_FINDERS]
     # Go iteratively through the patern "*.*.*......."
     # and, after some time, return all available nodes.
@@ -134,4 +136,35 @@ def get_all_leaf_nodes():
                 if isinstance(node, LeafNode):
                     res.append(node.path)
         pattern += ".*"
+    return res
+
+def get_structure(prefix=None, finders=None):
+    """Return a hierarchical ``dict`` of nodes/targets that are found in the
+    ``settings.STORAGE_DIR``"""
+
+    if finders is None:
+        finders = [get_finder(finder_path)
+                       for finder_path in settings.STORAGE_FINDERS]
+    # Go iteratively through the patern "*.*.*......."
+    # and, after some time, return all available nodes as a hierarchical
+    # structure.
+    # Might be also done just by going through the directory
+    # structure?
+    res = {}
+    if prefix is None:
+        pattern = "*"
+    else:
+        pattern = prefix + ".*"
+    for finder in finders:
+        for node in finder.find_nodes(FindQuery(pattern, None, None)):
+            if isinstance(node, LeafNode):
+                res[node.name] = node
+            elif isinstance(node, BranchNode):
+                tmp_res = get_structure(node.path, finders)
+                # If there are no nodes inside a BrancNode we ignore it
+                if tmp_res:
+                    res[node.name] = tmp_res
+            else:
+                msg = "Unknown node type: %s, %s"%(node.path, type(node))
+                raise Exception(msg)
     return res
