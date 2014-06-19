@@ -9,6 +9,12 @@ from graphite.query.attime import parseATTime
 from graphite.storage import get_finder, FindQuery
 from graphite.node import LeafNode, BranchNode
 
+def _evaluateTarget(params, target):
+    data = evaluateTarget(params, target)
+    if not data:
+        return [None]
+
+
 def query(*args, **kwargs):
     """ Returns a list of graphite.query.datalib.TimeSeries instances
 
@@ -33,6 +39,7 @@ def query(*args, **kwargs):
     """
     params = {}
 
+    # First try the positional arguments
     try:
         params['target'] = args[0]
     except IndexError:
@@ -53,6 +60,7 @@ def query(*args, **kwargs):
     except IndexError:
         pass
 
+    # Then, try the keyword arguments
     params.update(kwargs)
 
     if kwargs.has_key('from_'):
@@ -71,7 +79,6 @@ def query(*args, **kwargs):
         except pytz.UnknownTimeZoneError:
             pass
     params['tzinfo'] = tzinfo
-
     if 'until' in params:
         untilTime = parseATTime(params['until'], tzinfo)
     else:
@@ -89,10 +96,10 @@ def query(*args, **kwargs):
 
     data = []
     if isinstance(params['target'], basestring):
-        data.extend(evaluateTarget(params, params['target']))
+        data.extend(_evaluateTarget(params, params['target']))
     elif isinstance(params['target'], list):
         for target in params['target']:
-            data.extend(evaluateTarget(params, target))
+            data.extend(_evaluateTarget(params, target))
     else:
         raise TypeError("The target parameter must be a string or a list")
 
